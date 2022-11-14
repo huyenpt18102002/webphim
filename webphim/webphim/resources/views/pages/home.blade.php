@@ -105,9 +105,21 @@
                <section id="halim-advanced-widget-2">
 
                   <div class="section-heading">
-                     <a href="{{route('category',$cate_home->slug)}}" title="Phim Bộ">
                      <span class="h-text">{{$cate_home->title}}</span>
-                     </a>
+
+                     <style type="text/css">
+                        .xemthem{
+                           position: absolute;
+                           right: 0;
+                           font-weight: 400;
+                           line-height: 21px;
+                           text-transform: uppercase;
+                           padding: 9px 25px 9px px 10px;
+                        }
+                     </style>
+                     <a href="{{route('category',$cate_home->slug)}}" class="xemthem" title="Xem thêm">
+                        <span class="h-text">Xem thêm</span>
+                        </a>
                   </div>
                   <div id="halim-advanced-widget-2-ajax-box" class="halim_box">
                      @foreach($cate_home->movie->take(12) as $key => $mov)

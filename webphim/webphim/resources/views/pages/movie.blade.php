@@ -158,7 +158,9 @@
                                  <span class=total_rating>Đánh giá: {{$rating}}/{{$count_total}} lượt</span>
                                  
                               </ul>
-                              <div class="movie-trailer hidden"></div>
+                              <div class="movie-trailer hidden">
+                                
+                              </div>
                            </div>
                         </div>
                      </div>
@@ -196,6 +198,7 @@
                            </article>
                         </div>
                      </div>
+                     
                       {{-- Comment phim --}}
                       <div class="section-bar clearfix">
                         <h2 class="section-title"><span style="color:#ffed4d">Bình luận</span></h2>

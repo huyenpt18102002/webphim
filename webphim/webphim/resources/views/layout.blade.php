@@ -10,19 +10,19 @@
       <meta name="language" content="Việt Nam">
       <meta name="csrf-token" content="{{ csrf_token() }}" />
 
-      <link rel="shortcut icon" href="https://www.pngkey.com/png/detail/360-3601772_your-logo-here-your-company-logo-here-png.png" type="image/x-icon" />
+      <link rel="shortcut icon" href="{{asset('uploads/logo/'.$info->logo)}}" type="image/x-icon" />
       <meta name="revisit-after" content="1 days" />
       <meta name='robots' content='index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1' />
-      <title>Phim hay 2021 - Xem phim hay nhất</title>
-      <meta name="description" content="Phim hay 2021 - Xem phim hay nhất, xem phim online miễn phí, phim hot , phim nhanh" />
-      <link rel="canonical" href="">
+      <title>{{$meta_title}}</title>
+      <meta name="description" content="{{$meta_description}}" />
+      <link rel="canonical" href="{{Request::url()}}">
       <link rel="next" href="" />
       <meta property="og:locale" content="vi_VN" />
-      <meta property="og:title" content="Phim hay 2020 - Xem phim hay nhất" />
-      <meta property="og:description" content="Phim hay 2020 - Xem phim hay nhất, phim hay trung quốc, hàn quốc, việt nam, mỹ, hong kong , chiếu rạp" />
-      <meta property="og:url" content="" />
-      <meta property="og:site_name" content="Phim hay 2021- Xem phim hay nhất" />
-      <meta property="og:image" content="" />
+      <meta property="og:title" content="{{$meta_title}}" />
+      <meta property="og:description" content="{{$meta_description}}" />
+      <meta property="og:url" content="{{Request::url()}}" />
+      <meta property="og:site_name" content="{{$meta_title}}" />
+      <meta property="og:image" content="{{$meta_image}}" />
       <meta property="og:image:width" content="300" />
       <meta property="og:image:height" content="55" />
       <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
@@ -45,7 +45,9 @@
          <div class="container">
             <div class="row" id="headwrap">
                <div class="col-md-3 col-sm-6 slogan">
-                  <p class="site-title"><a class="logo" href="" title="phim hay ">Phim Hay</p>
+                  <p class=""><a class="logo" href="" title="phim hay ">
+                     <a href="{{route('homepage')}}"> <img src="{{asset('uploads/logo/'.$info->logo)}}" alt=""></a>
+                  </a></p>
                   </a>
                </div>
                <div class="col-md-5 col-sm-6 halim-search-form hidden-xs">
@@ -100,7 +102,7 @@
                         <li class="mega dropdown">
                            <a title="Thể Loại" href="#" data-toggle="dropdown" class="dropdown-toggle" aria-haspopup="true">Thể Loại <span class="caret"></span></a>
                            <ul role="menu" class=" dropdown-menu">
-                              @foreach($genre as $key => $gen)
+                              @foreach($genre_home as $key => $gen)
                               <li><a title="{{$gen->title}}" href="{{route('genre',$gen->slug)}}">{{$gen->title}}</a></li>
                               @endforeach
                            </ul>
@@ -108,7 +110,7 @@
                         <li class="mega dropdown">
                            <a title="Quốc Gia" href="#" data-toggle="dropdown" class="dropdown-toggle" aria-haspopup="true">Quốc Gia <span class="caret"></span></a>
                            <ul role="menu" class=" dropdown-menu">
-                              @foreach($country as $key => $count)
+                              @foreach($country_home as $key => $count)
                               <li><a title="{{$count->title}}" href="{{route('country',$count->slug)}}">{{$count->title}}</a></li>
                               @endforeach
                            </ul>
@@ -121,7 +123,7 @@
                               @endfor
                            </ul>
                         </li>
-                        @foreach($category as $key => $cate)
+                        @foreach($category_home as $key => $cate)
                         <li class="mega"><a title="{{$cate->title}}" href="{{route('category',$cate->slug)}}">{{$cate->title}}</a></li>
                         @endforeach
                         
@@ -147,29 +149,56 @@
       </div>
       <div class="container">
          @yield('content')
+         {{-- ========Banner quang cao================
+         @include('pages.include.banner') --}}
       </div>
       <div class="clearfix"></div>
       <footer id="footer" class="clearfix">
          <div class="container footer-columns">
             <div class="row container">
-               <div class="widget about col-xs-12 col-sm-4 col-md-4">
+               <div class="widget about col-xs-12 col-sm-4 col-md-3">
                   <div class="footer-logo">
-                     <img class="img-responsive" src="https://img.favpng.com/9/23/19/movie-logo-png-favpng-nRr1DmYq3SNYSLN8571CHQTEG.jpg" alt="Phim hay 2021- Xem phim hay nhất" />
+                    <a href="{{route('homepage')}}"><img src="{{asset('uploads/logo/'.$info->logo)}}" alt=""></a> 
                   </div>
-                  Liên hệ QC: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="e5958d8c888d849ccb868aa58288848c89cb868a88">[email&#160;protected]</a>
+                  {{-- Liên hệ QC: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="e5958d8c888d849ccb868aa58288848c89cb868a88">[email&#160;protected]</a> --}}
+               </div>
+               <div class="widget about col-xs-12 col-sm-4 col-md-6">
+                  <div class="footer-logo">
+                    <p>{{$info->description}}</p>
+                  </div>
                </div>
             </div>
          </div>
       </footer>
+      <style type="text/css">
+      .copyright_footer{
+         text-align: center;
+         line-height: 32px;
+         color: black;
+      }
+      </style>
+      <div class="widget about col-xs-12 col-sm-4 col-md-12">
+         <div class="footer-logo">
+           <p class="copyright_footer">{{$info->copyright}}</p>
+         </div>
+      </div>
       <div id='easy-top'></div>
      
       <script type='text/javascript' src='{{asset('js/bootstrap.min.js?ver=5.7.2')}}' id='bootstrap-js'></script>
       <script type='text/javascript' src='{{asset('js/owl.carousel.min.js?ver=5.7.2')}}' id='carousel-js'></script>
+
+      <div id="fb-root"></div>
+      <script async defer crossorigin="anonymous" src="https://connect.facebook.net/vi_VN/sdk.js#xfbml=1&version=v15.0" nonce="t96FDfuK"></script>
      
       <script type='text/javascript' src='{{asset('js/halimtheme-core.min.js?ver=1626273138')}}' id='halim-init-js'></script>
 
       <script type="text/javascript">
-        
+      $(window).on('load', function(){
+         $('#banner_quangcao').modal('show');
+      });
+      </script>
+
+      <script type="text/javascript"> 
          function remove_background(movie_id)
           {
            for(var count = 1; count <= 5; count++)

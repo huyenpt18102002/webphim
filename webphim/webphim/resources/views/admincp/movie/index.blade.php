@@ -1,13 +1,36 @@
 @extends('layouts.app')
 
 @section('content')
+
+<!-- Modal -->
+<div class="modal fade" id="videoModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><span id="video_title"></span></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+       <p id="video_desc"></p>
+       <p id="video_link"></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+       
+      </div>
+    </div>
+  </div>
+</div>
 <div class="container-fluid">
     <div class="row justify-content-center">
         <div class="col-md-12">
             <a href="{{route('movie.create')}}" class="btn btn-primary">Thêm Phim</a>
-            <table class="table table-responsive" id="tablephim">
+            <div class="table-responsive">
+            <table class="table" id="tablephim">
               <thead>
-                <tr>
+                <tr class="table-primary">
                   <th scope="col">#</th>
                   <th scope="col">Tên phim</th>
                   <th scope="col">Tập phim</th>
@@ -40,7 +63,15 @@
                 <tr>
                   <th scope="row">{{$key}}</th>
                   <td>{{$cate->title}}</td>
-                  <td><a href="{{route('add-episode', [$cate->id])}}" class="btn btn-info btn-sm">Thêm tập phim</a></td>
+                  <td>
+                    <a href="{{route('add-episode', [$cate->id])}}" class="btn btn-info btn-sm">Thêm tập phim</a>
+                    @foreach ($cate->episode as $key=>$epi)
+                    <span class="badge badge-success">
+                      <a class="show_video" data-movie_video_id = "{{$epi->movie_id}}" data-video_episode = "{{$epi->episode}}" 
+                        style="color: white;cursor: pointer;">{{$epi->episode}}</a>
+                    </span>
+                    @endforeach
+                  </td>
                   <td>{{$cate->episode_count}}/{{$cate->sotap}}</td>
                   <td> 
                      @if($cate->tags != null)
@@ -189,6 +220,7 @@
                 @endforeach
               </tbody>
             </table>
+          </div>
         </div>
     </div>
 </div>

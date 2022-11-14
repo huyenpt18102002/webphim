@@ -9,6 +9,7 @@ use App\Models\Movie_Genre;
 use App\Models\Category;
 use App\Models\Genre;
 use App\Models\Country;
+use App\Models\Info;
 use Carbon\Carbon;
 use Storage;
 use File;
@@ -158,10 +159,16 @@ class MovieController extends Controller
               <p class="title">'.$mov->title.'</p>
            </a>
            <div class="viewsCount" style="color: #9d9d9d;">3.2K lượt xem</div>
+           <div class="viewsCount" style="color: #9d9d9d;">'.$mov->year.'</div>
            <div style="float: left;">
-              <span class="user-rate-image post-large-rate stars-large-vang" style="display: block;/* width: 100%; */">
-              <span style="width: 0%"></span>
-              </span>
+           <ul class="list-inline rating"  title="Average Rating">
+           ';
+              for($count=1; $count<=5; $count++){
+              $output.='<li title="star_rating" style="font-size:18px;color:#ffcc00;padding:0"
+
+              >&#9733;</li>';
+              }
+              $output.=' </ul>
            </div>
         </div>';
         }
@@ -196,13 +203,19 @@ class MovieController extends Controller
               <p class="title">'.$mov->title.'</p>
            </a>
            <div class="viewsCount" style="color: #9d9d9d;">3.2K lượt xem</div>
+           <div class="viewsCount" style="color: #9d9d9d;">'.$mov->year.'</div>
            <div style="float: left;">
-              <span class="user-rate-image post-large-rate stars-large-vang" style="display: block;/* width: 100%; */">
-              <span style="width: 0%"></span>
-              </span>
+           <ul class="list-inline rating"  title="Average Rating">
+           ';
+              for($count=1; $count<=5; $count++){
+              $output.='<li title="star_rating" style="font-size:18px;color:#ffcc00;padding:0"
+
+              >&#9733;</li>';
+              }
+              $output.=' </ul>
            </div>
         </div>';
-        }
+            }
         echo $output;
     }
 
@@ -233,14 +246,15 @@ class MovieController extends Controller
                 'title' => 'required|unique:movies|max:255',
                 'trailer' => 'max:255',
                 'sotap' => 'required',
-                'tags' => 'max:255',
+                'tags' => 'max:2000',
                 'thoiluong' => 'max:255',
                 'resolution' => 'max:255',
                 'phude' => 'required',
                 'slug' => 'unique:movies|max:255',
                 'name_eng' => 'required',
                 'phim_hot' => 'required',
-                'description' => 'required|max:500',
+                'description' => 'required',
+                'status' => 'required',
                 'category_id' => 'required',
                 'thuocphim' => 'required',
                 'country_id' => 'required',
@@ -255,7 +269,6 @@ class MovieController extends Controller
                 'trailer.max' => 'Trailer phim chỉ dài tối đa 255 kí tự.',
                 'slug.unique' => 'Slug phim đã tồn tại.',
                 'description.required' => 'Mô tả phim bắt buộc phải nhập.',
-                'description.max' => 'Mô tả phim chỉ dài tối đa 500 kí tự.',
                 'sotap.required' => 'Số tập phim bắt buộc phải nhập.',
                 'name_eng.required' => 'Tên tiếng anh phim bắt buộc phải nhập.',
                 'genre.required' => 'Phải chọn thể loại cho phim.',
@@ -281,6 +294,7 @@ class MovieController extends Controller
         $movie->category_id = $data['category_id'];
         $movie->thuocphim = $data['thuocphim'];
         $movie->country_id = $data['country_id'];
+        $movie->count_views = rand(100, 99999);
         $movie->ngaytao = Carbon::now('Asia/Ho_Chi_Minh');
         $movie->ngaycapnhat = Carbon::now('Asia/Ho_Chi_Minh');
         foreach($data['genre'] as $key => $gen){
@@ -346,19 +360,20 @@ class MovieController extends Controller
                 'title' => 'required|max:255',
                 'trailer' => 'max:255',
                 'sotap' => 'required',
-                'tags' => 'max:255',
+                'tags' => 'max:2000',
                 'thoiluong' => 'max:255',
                 'resolution' => 'max:255',
                 'phude' => 'required',
                 'slug' => 'max:255',
                 'name_eng' => 'required',
                 'phim_hot' => 'required',
-                'description' => 'required|max:500',
+                'description' => 'required',
+                'status' => 'required',
                 'category_id' => 'required',
                 'thuocphim' => 'required',
                 'country_id' => 'required',
                 'genre' => 'required',
-                'image' => 'required|image|mimes:jpg, png, jpeg, gif, svg, jfif|max:2048',
+                'image' => 'image|mimes:jpg,png,jpeg,gif,svg,jfif|max:2048',
                 
             ],
             [
@@ -366,7 +381,6 @@ class MovieController extends Controller
                 'title.max' => 'Tên phim chỉ dài tối đa 255 kí tự.',
                 'trailer.max' => 'Trailer phim chỉ dài tối đa 255 kí tự.',
                 'description.required' => 'Mô tả phim bắt buộc phải nhập.',
-                'description.max' => 'Mô tả phim chỉ dài tối đa 500 kí tự.',
                 'sotap.required' => 'Số tập phim bắt buộc phải nhập.',
                 'name_eng.required' => 'Tên tiếng anh phim bắt buộc phải nhập.',
                 'genre.required' => 'Phải chọn thể loại cho phim.',
@@ -437,4 +451,17 @@ class MovieController extends Controller
         toastr()->info('Success', 'Xóa phim thành công.');
         return redirect()->back();
     }
+    public function watch_video(Request $request)
+    {
+        $data = $request->all();
+        $movie = Movie::find($data['movie_id']);
+        $video = Episode::where('movie_id', $data['movie_id'])->where('episode', $data['episode_id'])->first();
+
+        $output['video_title'] = $movie->title.' - tập'.$video->episode;
+        $output['video_desc'] = $movie->description;
+        $output['video_link'] = $video->linkphim;
+
+        echo json_encode($output);
+    }
+    
 }

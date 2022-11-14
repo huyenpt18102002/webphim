@@ -102,6 +102,7 @@ class CategoryController extends Controller
                 'slug' => 'required|max:255',
                 'description' => 'required|max:255',
                 'status' => 'required',
+                
             ],
             [
                 'title.required' => 'Tên danh mục bắt buộc phải nhập.',

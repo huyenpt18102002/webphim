@@ -10,6 +10,7 @@ use App\Models\Movie;
 use App\Models\Episode;
 use App\Models\Movie_Genre;
 use App\Models\Rating;
+use App\Models\Info;
 use DB;
 
 class IndexController extends Controller
@@ -24,12 +25,6 @@ class IndexController extends Controller
         if($sapxep == '' && $genre_get == '' && $country_get == '' && $year_get == ''){
             return redirect()->back();
         }else{
-            $category = Category::orderBy('position','ASC')->where('status',1)->get();
-            $genre = Genre::orderBy('id','DESC')->get();
-            $country = Country::orderBy('id','DESC')->get();
-            $phimhot_sidebar = Movie::where('phim_hot',1)->where('status',1)->orderBy('ngaycapnhat', 'DESC')->take(10)->get();
-            $phimhot_trailer = Movie::where('resolution',5)->where('status',1)->orderBy('ngaycapnhat', 'DESC')->take(10)->get();
-
             //lay du lieu
             $movie = Movie::withCount('episode');
             if($genre_get){
@@ -43,73 +38,77 @@ class IndexController extends Controller
             }
             
             $movie = $movie->orderBy('ngaycapnhat', 'DESC')->paginate(40);
-            return view('pages.locphim', compact('category','genre','country','movie', 'phimhot_sidebar', 'phimhot_trailer'));
+            return view('pages.locphim', compact('movie'));
         }
     }
     public function timkiem()
     {
         if(isset($_GET['search'])){
            $search =  $_GET['search'];
-           $category = Category::orderBy('position','ASC')->where('status',1)->get();
-           $genre = Genre::orderBy('id','DESC')->get();
-           $country = Country::orderBy('id','DESC')->get();
+          
            $movie = Movie::withCount('episode')->where('status',1)->where('title', 'LIKE', '%'.$search.'%')->orderBy('ngaycapnhat', 'DESC')->paginate(40);
-           $phimhot_sidebar = Movie::where('phim_hot',1)->where('status',1)->orderBy('ngaycapnhat', 'DESC')->take(10)->get();
-           $phimhot_trailer = Movie::where('resolution',5)->where('status',1)->orderBy('ngaycapnhat', 'DESC')->take(10)->get();
-           return view('pages.search', compact('category','genre','country', 'search', 'movie', 'phimhot_sidebar', 'phimhot_trailer'));
+          
+           return view('pages.search', compact('search', 'movie'));
         }else{
             return redirect()->to('/');
         }
     }
 
     public function home(){
+        $info = Info::find(1);
+        $meta_title = $info->title;
+        $meta_description = $info->description;
+        $meta_image = url('uploads/logo/'.$info->logo);
+
         $phimhot = Movie::withCount('episode')->where('phim_hot',1)->where('status',1)->orderBy('ngaycapnhat', 'DESC')->get()->take(15);
-        $phimhot_sidebar = Movie::where('phim_hot',1)->where('status',1)->orderBy('ngaycapnhat', 'DESC')->take(10)->get();
-        $phimhot_trailer = Movie::where('resolution',5)->where('status',1)->orderBy('ngaycapnhat', 'DESC')->take(10)->get();
-        $category = Category::orderBy('position','ASC')->where('status',1)->get();
-        $genre = Genre::orderBy('id','DESC')->get();
-        $country = Country::orderBy('id','DESC')->get();
+       
         $category_home = Category::with(['movie' => function($q){
                                                                $q->withCount('episode')->where('status',1);
                                                                }
                                                                ])->orderBy('id','DESC')->where('status',1)->get();
-    	return view('pages.home', compact('category','genre','country','category_home','phimhot', 'phimhot_sidebar', 'phimhot_trailer'));
+    	return view('pages.home', compact('category_home','phimhot', 'meta_title', 'meta_description', 'meta_image'));
     }
     public function category($slug){
-        $category = Category::orderBy('position','ASC')->where('status',1)->get();
-        $genre = Genre::orderBy('id','DESC')->get();
-        $country = Country::orderBy('id','DESC')->get();
+       
         $cate_slug = Category::where('slug',$slug)->first();
+        $meta_title = $cate_slug->title;
+        $meta_description = $cate_slug->description;
+        $info = Info::find(1);
+        $meta_image = url('uploads/logo/'.$info->logo);
+
         $movie = Movie::withCount('episode')->where('status',1)->where('category_id',$cate_slug->id)->orderBy('ngaycapnhat', 'DESC')->paginate(40);
-        $phimhot_sidebar = Movie::where('phim_hot',1)->where('status',1)->orderBy('ngaycapnhat', 'DESC')->take(10)->get();
-        $phimhot_trailer = Movie::where('resolution',5)->where('status',1)->orderBy('ngaycapnhat', 'DESC')->take(10)->get();
-    	return view('pages.category', compact('category','genre','country','cate_slug','movie', 'phimhot_sidebar', 'phimhot_trailer'));
+       
+    	return view('pages.category', compact('cate_slug','movie', 'meta_title', 'meta_description', 'meta_image'));
     }
     public function year($year){
-        $category = Category::orderBy('position','ASC')->where('status',1)->get();
-        $genre = Genre::orderBy('id','DESC')->get();
-        $country = Country::orderBy('id','DESC')->get();
+        $meta_title = 'Năm phim: '.$year;
+        $meta_description = 'Tìm phim năm: '.$year;
+        $info = Info::find(1);
+        $meta_image = url('uploads/logo/'.$info->logo);
+
         $year = $year;
         $movie = Movie::withCount('episode')->where('status',1)->where('year',$year)->orderBy('ngaycapnhat', 'DESC')->paginate(40);
-        $phimhot_sidebar = Movie::where('phim_hot',1)->where('status',1)->orderBy('ngaycapnhat', 'DESC')->take(10)->get();
-        $phimhot_trailer = Movie::where('resolution',5)->where('status',1)->orderBy('ngaycapnhat', 'DESC')->take(10)->get();
-    	return view('pages.year', compact('category','genre','country','year','movie', 'phimhot_sidebar', 'phimhot_trailer'));
+       
+    	return view('pages.year', compact('year','movie', 'meta_title', 'meta_description', 'meta_image'));
     }
     public function tag($tag){
-        $category = Category::orderBy('position','ASC')->where('status',1)->get();
-        $genre = Genre::orderBy('id','DESC')->get();
-        $country = Country::orderBy('id','DESC')->get();
+        $meta_title = $tag;
+        $meta_description = $tag;
+        $info = Info::find(1);
+        $meta_image = url('uploads/logo/'.$info->logo);
+
         $tag = $tag;
         $movie = Movie::withCount('episode')->where('status',1)->where('tags','LIKE', '%'.$tag.'%')->orderBy('ngaycapnhat', 'DESC')->paginate(40);
-        $phimhot_sidebar = Movie::where('phim_hot',1)->where('status',1)->orderBy('ngaycapnhat', 'DESC')->take(10)->get();
-        $phimhot_trailer = Movie::where('resolution',5)->where('status',1)->orderBy('ngaycapnhat', 'DESC')->take(10)->get();
-    	return view('pages.tag', compact('category','genre','country','tag','movie', 'phimhot_sidebar', 'phimhot_trailer'));
+       
+    	return view('pages.tag', compact('tag','movie', 'meta_title', 'meta_description', 'meta_image'));
     }
     public function genre($slug){
-        $category = Category::orderBy('position','ASC')->where('status',1)->get();
-        $genre = Genre::orderBy('id','DESC')->get();
-        $country = Country::orderBy('id','DESC')->get();
+       
         $genre_slug = Genre::where('slug',$slug)->first();
+        $meta_title = $genre_slug->title;
+        $meta_description = $genre_slug->description;
+        $info = Info::find(1);
+        $meta_image = url('uploads/logo/'.$info->logo);
         //nhieu the loai
         $movie_genre = Movie_Genre::where('genre_id', $genre_slug->id)->get();
         $many_genre = [];
@@ -117,30 +116,29 @@ class IndexController extends Controller
             $many_genre[] = $movi->movie_id;
         }
         $movie = Movie::withCount('episode')->where('status',1)->whereIn('id',$many_genre)->orderBy('ngaycapnhat', 'DESC')->paginate(40);
-        $phimhot_sidebar = Movie::withCount('episode')->where('phim_hot',1)->where('status',1)->orderBy('ngaycapnhat', 'DESC')->take(10)->get();
-        $phimhot_trailer = Movie::where('resolution',5)->where('status',1)->orderBy('ngaycapnhat', 'DESC')->take(10)->get();
-    	return view('pages.genre', compact('category','genre','country','genre_slug','movie', 'phimhot_sidebar', 'phimhot_trailer'));
+       
+    	return view('pages.genre', compact('genre_slug','movie', 'meta_title', 'meta_description', 'meta_image'));
     }
     public function country($slug){
-        $category = Category::orderBy('position','ASC')->where('status',1)->get();
-        $genre = Genre::orderBy('id','DESC')->get();
-        $country = Country::orderBy('id','DESC')->get();
-
+       
         $country_slug = Country::where('slug',$slug)->first();
+        $meta_title = $country_slug->title;
+        $meta_description = $country_slug->description;
+        $info = Info::find(1);
+        $meta_image = url('uploads/logo/'.$info->logo);
         $movie = Movie::withCount('episode')->where('status',1)->where('country_id',$country_slug->id)->orderBy('ngaycapnhat', 'DESC')->paginate(40);
-        $phimhot_sidebar = Movie::where('phim_hot',1)->where('status',1)->orderBy('ngaycapnhat', 'DESC')->take(10)->get();
-        $phimhot_trailer = Movie::where('resolution',5)->where('status',1)->orderBy('ngaycapnhat', 'DESC')->take(10)->get();
-    	return view('pages.country', compact('category','genre','country','country_slug','movie', 'phimhot_sidebar', 'phimhot_trailer'));
+        
+    	return view('pages.country', compact('country_slug','movie', 'meta_title', 'meta_description', 'meta_image'));
     }
     public function movie($slug){
-        $category = Category::orderBy('position','ASC')->where('status',1)->get();
-        $genre = Genre::orderBy('id','DESC')->get();
-        $country = Country::orderBy('id','DESC')->get();
+      
         $movie = Movie::with('category','genre','country', 'movie_genre')->where('status',1)->where('slug',$slug)->where('status',1)->first();
+        $meta_title = $movie->title;
+        $meta_description = $movie->description;
+        $meta_image = url('uploads/movie/'.$movie->image);
+
         $episode_tapdau = Episode::with('movie')->where('movie_id', $movie->id)->orderBy('episode', 'ASC')->take(1)->first();
         $related = Movie::with('category','genre','country')->where('category_id',$movie->category->id)->orderBy(DB::raw('RAND()'))->whereNotIn('slug',[$slug])->get()->take(7);
-        $phimhot_sidebar = Movie::where('phim_hot',1)->where('status',1)->orderBy('ngaycapnhat', 'DESC')->take(10)->get();
-        $phimhot_trailer = Movie::where('resolution',5)->where('status',1)->orderBy('ngaycapnhat', 'DESC')->take(10)->get();
         $episode = Episode::with('movie')->where('movie_id', $movie->id)->orderBy('episode', 'DESC')->take(3)->get();
         //lay tong tap phim da them
         $episode_current_list = Episode::with('movie')->where('movie_id', $movie->id)->get();
@@ -150,8 +148,13 @@ class IndexController extends Controller
         $rating = round($rating);
 
         $count_total = Rating::where('movie_id', $movie->id)->count();
+          //tang 1 luot view khi click xem phim cụ the
+          $count_views =  $movie->count_views;
+          $count_views = $count_views + 1;
+          $movie->count_views =  $count_views;
+          $movie->save();
 
-        return view('pages.movie', compact('category','genre','country','movie','related', 'phimhot_sidebar', 'phimhot_trailer', 'episode', 'episode_tapdau', 'episode_current_list_count', 'rating', 'count_total'));
+        return view('pages.movie', compact('movie','related', 'episode', 'episode_tapdau', 'episode_current_list_count', 'rating', 'count_total', 'meta_title', 'meta_description', 'meta_image'));
     }
     public function add_rating(Request $request)
     {
@@ -172,10 +175,12 @@ class IndexController extends Controller
     }
 
     public function watch($slug, $tap){
-        $category = Category::orderBy('position','ASC')->where('status',1)->get();
-        $genre = Genre::orderBy('id','DESC')->get();
-        $country = Country::orderBy('id','DESC')->get();
+       
         $movie = Movie::with('category','genre','country', 'movie_genre', 'episode')->where('slug',$slug)->where('status',1)->first();
+        $meta_title = 'Xem phim: '.$movie->title;
+        $meta_description = $movie->description;
+        $meta_image = url('uploads/movie/'.$movie->image);
+
         $related = Movie::with('category','genre','country')->where('category_id',$movie->category->id)->orderBy(DB::raw('RAND()'))->whereNotIn('slug',[$slug])->get()->take(7);
         if(isset($tap)){
             $tapphim = $tap;
@@ -185,10 +190,9 @@ class IndexController extends Controller
             $tapphim = 1;
             $episode = Episode::where('movie_id', $movie->id)->where('episode', $tapphim)->first();
         }
-        $phimhot_sidebar = Movie::where('phim_hot',1)->where('status',1)->orderBy('ngaycapnhat', 'DESC')->take(10)->get();
-        $phimhot_trailer = Movie::where('resolution',5)->where('status',1)->orderBy('ngaycapnhat', 'DESC')->take(10)->get();
        
-    	return view('pages.watch', compact('category','genre','country','movie', 'phimhot_sidebar', 'phimhot_trailer', 'episode', 'tapphim', 'related'));
+       
+    	return view('pages.watch', compact('movie', 'episode', 'tapphim', 'related', 'meta_title', 'meta_description', 'meta_image'));
     }
     public function episode(){
     	return view('pages.episode');

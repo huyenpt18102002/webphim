@@ -40,11 +40,29 @@
                          </span>
                       </div>
                       <p class="title">{{$hot_sidebar->title}}</p>
+
                    </a>
-                   <div class="viewsCount" style="color: #9d9d9d;">3.2K lượt xem</div>
+                   <div class="viewsCount" style="color: #9d9d9d;">
+                     @if ($hot_sidebar->count_views > 0)
+                     {{$hot_sidebar->count_views}} lượt quan tâm
+                     @else
+                        @php
+                           echo rand(100, 99999);
+                        @endphp
+                        lượt quan tâm
+                     @endif
+                  </div>
+                   <div class="viewsCount" style="color: #9d9d9d;">{{$hot_sidebar->year}}</div>
                    <div style="float: left;">
-                      <span class="user-rate-image post-large-rate stars-large-vang" style="display: block;/* width: 100%; */">
-                      <span style="width: 0%"></span>
+                      {{-- ------------Hien thi sao------------ --}}
+                      <ul class="list-inline rating"  title="Average Rating">
+                      @for($count=1; $count<=5; $count++)
+                      <li title="star_rating" style="font-size:18px;color:#ffcc00;padding:0"
+
+                      >&#9733;</li>
+                    @endfor
+                  </ul>
+                     
                       </span>
                    </div>
                 </div>
@@ -99,11 +117,16 @@
                      <p class="title">{{$hot_sidebar->title}}</p>
                   </a>
                   <div class="viewsCount" style="color: #9d9d9d;">3.2K lượt xem</div>
+                  <div class="viewsCount" style="color: #9d9d9d;">{{$hot_sidebar->year}}</div>
                   <div style="float: left;">
-                     <span class="user-rate-image post-large-rate stars-large-vang" style="display: block;/* width: 100%; */">
-                     <span style="width: 0%"></span>
-                     </span>
-                  </div>
+                     {{-- ------------Hien thi sao------------ --}}
+                     <ul class="list-inline rating"  title="Average Rating">
+                        @for($count=1; $count<=5; $count++)
+                        <li title="star_rating" style="font-size:18px;color:#ffcc00;padding:0"
+  
+                        >&#9733;</li>
+                      @endfor
+                    </ul>
                </div>
                @endforeach
             </div>

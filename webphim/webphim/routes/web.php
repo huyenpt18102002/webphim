@@ -8,6 +8,8 @@ use App\Http\Controllers\GenreController;
 use App\Http\Controllers\CountryController;
 use App\Http\Controllers\MovieController;
 use App\Http\Controllers\EpisodeController;
+use App\Http\Controllers\InfoController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -52,6 +54,8 @@ Route::get('update-season-phim', [MovieController::class, 'update_season']);
 Route::get('update-topview-phim', [MovieController::class, 'update_topview']);
 Route::post('filter-topview-phim', [MovieController::class, 'filter_topview']);
 Route::get('filter-topview-default', [MovieController::class, 'filter_default']);
+//thong tin website
+Route::resource('info', InfoController::class);
 
 //thay doi du lieu table movie bang ajax
 Route::get('/category-choose', [MovieController::class, 'category_choose'])->name('category-choose');
@@ -62,6 +66,7 @@ Route::get('/trangthai-choose', [MovieController::class, 'trangthai_choose'])->n
 Route::get('/thuocphim-choose', [MovieController::class, 'thuocphim_choose'])->name('thuocphim-choose');
 Route::get('/resolution-choose', [MovieController::class, 'resolution_choose'])->name('resolution-choose');
 Route::post('/update-image-movie-ajax', [MovieController::class, 'update_image_movie_ajax'])->name('update-image-movie-ajax');
+Route::post('/watch-video', [MovieController::class, 'watch_video'])->name('watch-video');
 
 
 
